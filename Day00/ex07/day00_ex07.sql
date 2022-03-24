@@ -6,4 +6,4 @@ SELECT id, name,
 	END
 	) AS interval
 FROM person
-ORDER BY interval
+ORDER BY interval;
