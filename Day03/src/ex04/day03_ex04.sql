@@ -8,4 +8,4 @@ WITH table1 AS
 SELECT DISTINCT name AS pizzeria_name FROM table1 WHERE gender = 'male' AND name NOT IN (SELECT name FROM table1 WHERE gender = 'female')
 UNION ALL
 SELECT DISTINCT name FROM table1 WHERE gender = 'female' AND name NOT IN (SELECT name FROM table1 WHERE gender = 'male')
-ORDER BY 1
+ORDER BY 1;

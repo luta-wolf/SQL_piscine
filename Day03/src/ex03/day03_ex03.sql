@@ -1,12 +1,35 @@
-SELECT pizzeria.name AS pizzeria_name FROM person_visits
-INNER JOIN person ON person_visits.person_id = person.id
-INNER JOIN pizzeria ON person_visits.person_id =  pizzeria.id
-WHERE gender = 'male'
+WITH male AS (SELECT pizzeria.name
+				FROM pizzeria
+				JOIN person_visits AS visit
+				ON pizzeria.id = visit.pizzeria_id
+				JOIN person on person.id = visit.person_id
+				WHERE gender = 'male'
+			   ),
+	female AS (SELECT pizzeria.name
+			   FROM pizzeria
+			   JOIN person_visits AS visit
+			   ON pizzeria.id = visit.pizzeria_id
+			   JOIN person
+			   ON person.id = visit.person_id
+			   WHERE gender = 'female'
+			  ),
+ only_male AS (SELECT name
+			   FROM male
+			   EXCEPT ALL
+			   SELECT name
+			   FROM female
+			  ),
+only_female AS (SELECT name
+				FROM female
+				EXCEPT ALL
+				SELECT name
+				FROM male
+			   )
+SELECT name AS pizzeria_name
+FROM only_male
 UNION ALL
-SELECT pizzeria.name AS pizzeria_name FROM person_visits
-INNER JOIN person ON person_visits.person_id = person.id
-INNER JOIN pizzeria ON person_visits.person_id =  pizzeria.id
-WHERE gender = 'female'
+SELECT name
+FROM only_female
 ORDER BY 1;
 
 
@@ -29,39 +52,7 @@ ORDER BY 1;
     --   from person p inner join person_visits pv on p.id = pv.person_id
     --       inner join pizzeria p2 on p2.id = pv.pizzeria_id
     --   where p.gender = 'female')
-    --   order by 1
+    --   order by 1;
 
 
--- WITH male AS (SELECT pizzeria.name
--- 				FROM pizzeria
--- 				JOIN person_visits AS visit
--- 				ON pizzeria.id = visit.pizzeria_id
--- 				JOIN person on person.id = visit.person_id
--- 				WHERE gender = 'male'
--- 			   ),
--- 	female AS (SELECT pizzeria.name
--- 			   FROM pizzeria
--- 			   JOIN person_visits AS visit
--- 			   ON pizzeria.id = visit.pizzeria_id
--- 			   JOIN person
--- 			   ON person.id = visit.person_id
--- 			   WHERE gender = 'female'
--- 			  ),
---  only_male AS (SELECT name
--- 			   FROM male
--- 			   EXCEPT ALL
--- 			   SELECT name
--- 			   FROM female
--- 			  ),
--- only_female AS (SELECT name
--- 				FROM female
--- 				EXCEPT ALL
--- 				SELECT name
--- 				FROM male
--- 			   )
--- SELECT name AS pizzeria_name
--- FROM only_male
--- UNION ALL
--- SELECT name
--- FROM only_female
--- ORDER BY 1;
+
