@@ -1,4 +1,4 @@
-SELECT name FROM v_persons_female
-UNION
-SELECT name FROM v_persons_male
-ORDER BY 1;
+select name from v_persons_female
+union all
+select name from v_persons_male
+order by name;

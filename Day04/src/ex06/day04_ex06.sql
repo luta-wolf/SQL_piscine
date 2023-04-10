@@ -1,9 +1,7 @@
-CREATE MATERIALIZED VIEW mv_dmitriy_visits_and_eats AS
-SELECT DISTINCT piz_name FROM
-	(SELECT pizzeria.name as piz_name, pizzeria_id as piz_id
-	FROM person_visits
-	LEFT JOIN person ON person.id = person_id
-	LEFT JOIN pizzeria ON pizzeria.id = pizzeria_id
-	WHERE person.name = 'Dmitriy' AND visit_date = '2022-01-08') AS t1
-LEFT JOIN menu ON menu.pizzeria_id = t1.piz_id
-WHERE menu.price < 800;
+create materialized view mv_dmitriy_visits_and_eats
+as
+    select p2.name from person_visits
+    join person p on person_visits.person_id = p.id
+    join pizzeria p2 on person_visits.pizzeria_id = p2.id
+    join menu m on p2.id = m.pizzeria_id
+where p.name = 'Dmitriy' and  visit_date = '2022-01-08' and price < 800 ;

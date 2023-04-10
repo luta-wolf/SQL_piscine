@@ -1,7 +1,5 @@
-CREATE VIEW v_persons_female AS
-SELECT * FROM person
-WHERE gender = 'female';
+create view v_persons_female
+as select * from person where person.gender = 'female';
 
-CREATE VIEW v_persons_male AS
-SELECT * FROM person
-WHERE gender = 'male';
+create view v_persons_male
+as select * from person where person.gender = 'male';
