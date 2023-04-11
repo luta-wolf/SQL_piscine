@@ -1,11 +1,7 @@
-CREATE UNIQUE INDEX idx_menu_unique 
-			ON menu(pizzeria_id, pizza_name);
-			
-SET enable_seqscan = OFF;
-explain analyze 
+CREATE UNIQUE INDEX idx_menu_unique ON menu (pizzeria_id, pizza_name);
+SET ENABLE_SEQSCAN TO OFF;
 
-SELECT pizzeria_id, pizza_name 
-		from menu
-		where pizzeria_id > 0
-		
-		
+EXPLAIN ANALYZE
+SELECT * FROM menu where pizzeria_id = 5 and  pizza_name = 'pepperoni pizza';
+
+DROP INDEX idx_menu_unique;

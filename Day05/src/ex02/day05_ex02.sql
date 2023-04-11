@@ -1,6 +1,8 @@
-CREATE INDEX idx_person_name on person(upper(name));
+CREATE INDEX idx_person_name ON person (upper(name));
+SET ENABLE_SEQSCAN TO OFF;
 
-SET enable_seqscan = OFF;
-explain analyze 
+EXPLAIN ANALYZE
+SELECT * FROM person WHERE upper(name) = 'DENIS';
 
-select * from person where (upper(name)) is not  null
+--
+-- DROP INDEX idx_person_name;

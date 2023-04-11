@@ -1,10 +1,9 @@
-CREATE UNIQUE INDEX idx_person_order_order_date 
-			ON person_order (person_id, menu_id)
-			WHERE order_date = '2022-01-01';
-	
-SET enable_seqscan = OFF;
-explain analyze 
+CREATE UNIQUE INDEX idx_person_order_order_date ON person_order (person_id, menu_id)
+WHERE order_date = '2022-01-01';
+SET ENABLE_SEQSCAN TO OFF;
 
-SELECT person_id, menu_id from person_order 
-		where  order_date = '2022-01-01'
+EXPLAIN ANALYZE
+SELECT person_id, menu_id FROM person_order
+WHERE person_id = 1 AND menu_id = 1 and order_date = '2022-01-01';
 
+-- DROP INDEX idx_person_order_order_date;
