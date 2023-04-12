@@ -69,7 +69,7 @@ If we are talking about historical data then we should mention the “Data lifec
 ## Rules of the day
 
 - Please make sure you have an own database and access for it on your PostgreSQL cluster. 
-- Please download a [script](materials/model.sql) with Database Model here and apply the script to your database (you can use command line with psql or just run it through any IDE, for example DataGrip from JetBrains or pgAdmin from PostgreSQL community). 
+- Please download a [script](materials/model.sql) with Database Model here and apply the script to your database (you can use command line with psql or just run it through any IDE, for example DataGrip from JetBrains or pgAdmin from PostgreSQL community). **Our knowledge way is incremental and linear therefore please be aware all changes that you made in Day03 during exercises 07-13 and in Day04 during exercise 07 should be on place (its similar like in real world , when we applied a release and need to be consistency with data for new changes).**
 - All tasks contain a list of Allowed and Denied sections with listed database options, database types, SQL constructions etc. Please have a look at the section before you start.
 - Please take a look at the Logical View of our Database Model. 
 
@@ -102,6 +102,8 @@ If we are talking about historical data then we should mention the “Data lifec
 - field menu_id - foreign key to menu
 - field order_date - date (for example 2022-01-01) of person order 
 
+Persons' visit and persons' order are different entities and don't contain any correlation between data. For example, a client can be in one restaurant (just looking at menu) and in this time make an order in different one by phone or by mobile application. Or another case,  just be at home and again make a call with order without any visits.
+
 
 ## Chapter IV
 ## Exercise 00 - Simple aggregated information
@@ -113,7 +115,7 @@ If we are talking about historical data then we should mention the “Data lifec
 | **Allowed**                               |                                                                                                                          |
 | Language                        | ANSI SQL|
 
-Let’s make a simple aggregation, please write a SQL statement that returns person identifiers and corresponding number of visits in any pizzerias and sorting by count of visits in descending mode. Please take a look at the sample of data below.
+Let’s make a simple aggregation, please write a SQL statement that returns person identifiers and corresponding number of visits in any pizzerias and sorting by count of visits in descending mode and sorting in `person_id` in ascending mode. Please take a look at the sample of data below.
 
 | person_id | count_of_visits |
 | ------ | ------ |
@@ -132,12 +134,11 @@ Let’s make a simple aggregation, please write a SQL statement that returns per
 | **Allowed**                               |                                                                                                                          |
 | Language                        | ANSI SQL                                                                                              |
 
-Please change a SQL statement from Exercise 00 and return a person name (not identifier). Additionally clause is  we need to see only top-5 persons with maximal visits in any pizzerias. Please take a look at the example of output data below.
+Please change a SQL statement from Exercise 00 and return a person name (not identifier). Additional clause is  we need to see only top-4 persons with maximal visits in any pizzerias and sorted by a person name. Please take a look at the example of output data below.
 
 | name | count_of_visits |
 | ------ | ------ |
 | Dmitriy | 4 |
-| Irina | 3 |
 | Denis | 3 |
 | ... | ... | 
 
@@ -172,10 +173,12 @@ Please write a SQL statement to see 3 favorite restaurants by visits and by orde
 | **Allowed**                               |                                                                                                                          |
 | Language                        | ANSI SQL                                                                                              |
 
+Please write a SQL statement to see restaurants are grouping by visits and by orders and joined with each other by using restaurant name.  
+You can use internal SQLs from Exercise 02 (restaurants by visits and by orders) without limitations of amount of rows.
 
-Please rewrite a SQL statement from Exercise #02 with the next rules
+Additionally, please add the next rules.
 - calculate a sum of orders and visits for corresponding pizzeria (be aware, not all pizzeria keys are presented in both tables).
-- sort results by total_count column in descending mode.
+- sort results by `total_count` column in descending mode and by `name` in ascending mode.
 Take a look at the data sample below.
 
 | name | total_count |
@@ -293,7 +296,7 @@ We know about personal addresses from our data. Let’s imagine, that particular
 | **Allowed**                               |                                                                                                                          |
 | Language                        | ANSI SQL                                                                                              |
 
-Please write a SQL statement that returns aggregated information by person’s address, average age per address , the result of “(Maximal Age - Minimal Age ) / Maximal Age” that is presented as a formula column and the result of comparison between formula and average columns (other words, if formula is greater than  average then True, otherwise False value).
+Please write a SQL statement that returns aggregated information by person’s address , the result of “Maximal Age - (Minimal Age  / Maximal Age)” that is presented as a formula column, next one is average age per address and the result of comparison between formula and average columns (other words, if formula is greater than  average then True, otherwise False value).
 
 The result should be sorted by address column. Please take a look at the sample of output data below.
 
