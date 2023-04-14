@@ -1,8 +1,8 @@
-CREATE TABLE person_discounts
-(id BIGINT PRIMARY KEY,
- fk_person_discounts_person_id BIGINT,
- FOREIGN KEY (fk_person_discounts_person_id) REFERENCES person(id),
- fk_person_discounts_pizzeria_id BIGINT,
- FOREIGN KEY (fk_person_discounts_pizzeria_id) REFERENCES pizzeria(id),
- discount FLOAT
-)
+create table person_discounts
+      (id bigint primary key ,
+      person_id bigint,
+      pizzeria_id bigint,
+      discount numeric,
+      constraint fk_person_discounts_person_id foreign key  (person_id) references person(id),
+      constraint fk_person_discounts_pizzeria_id foreign key  (pizzeria_id) references pizzeria(id)
+      );

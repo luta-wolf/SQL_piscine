@@ -1,5 +1,6 @@
-COMMENT ON TABLE person_discounts IS 'Это таблица скидок жи есть';
-COMMENT ON COLUMN person_discounts.id IS 'Это айди';
-COMMENT ON COLUMN person_discounts.fk_person_discounts_person_id IS 'Это Имя мудака, которому скидку ебашим';
-COMMENT ON COLUMN person_discounts.fk_person_discounts_pizzeria_id IS 'Это Имя нашей офигенной пиццерии';
-COMMENT ON COLUMN person_discounts.discount IS 'Это наша неебическая скидка';
+comment on table person_discounts is 'Это таблица person discount';
+comment on column person_discounts.id is 'Это ID этой таблицы';
+comment on column person_discounts.person_id is 'Это колонка ID человека в этой таблице';
+comment on column person_discounts.pizzeria_id is 'Это колонка ID пиццерии';
+comment on column person_discounts.discount is 'Это колонка со скидкой';
+

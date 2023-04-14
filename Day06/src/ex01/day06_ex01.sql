@@ -1,12 +1,12 @@
-INSERT INTO person_discounts
-SELECT ROW_NUMBER() OVER () id, p.id person_id, pz.id pizzeria_id,
-    CASE
-    WHEN COUNT(*) = 1 THEN 10.5
-    WHEN COUNT(*) = 2 THEN 22
-    ELSE 30
-    END discount
-FROM person_order po
-JOIN person p ON p.id = po.person_id
-JOIN menu m ON m.id = po.menu_id
-JOIN pizzeria pz ON pz.id = m.pizzeria_id
-GROUP BY 2, 3;
+INSERT INTO  person_discounts (id, person_id, pizzeria_id, discount)
+SELECT
+    row_number() over () as id,
+    person_id,
+    m.pizzeria_id,
+    case
+        when count(*) = 1 then 10.5
+        when count(*) = 2 then 22
+        else 30
+    end as discount
+FROM  person_order inner join menu m on m.id = person_order.menu_id
+GROUP BY person_id, m.pizzeria_id;
