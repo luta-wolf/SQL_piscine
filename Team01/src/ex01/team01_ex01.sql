@@ -1,115 +1,28 @@
-(SELECT t1.name, t1.lastname, t1.currency_name, t1.money FROM (
-    SELECT COALESCE(u.name, '') name, COALESCE(u.lastname, '') lastname, COALESCE(c1.name, '') currency_name,
-           b.money, MAX(c1.updated)
-           FROM "user" u
-    FULL JOIN balance b ON b.user_id = u.id
-    INNER JOIN (
-        SELECT * FROM currency c
-        ORDER BY name, updated DESC) c1 ON c1.id = b.currency_id AND c1.updated <= b.updated
-    GROUP BY 1, 2, 3, 4
-    ORDER BY 1 DESC, 2, 3) t1)
-UNION
-(SELECT t1.name, t1.lastname, t1.currency_name, t1.money FROM (
-    SELECT COALESCE(u.name, '') name, COALESCE(u.lastname, '') lastname, COALESCE(c1.name, '') currency_name,
-           b.money, MAX(c1.updated)
-           FROM "user" u
-    FULL JOIN balance b ON b.user_id = u.id
-    INNER JOIN (
-        SELECT * FROM currency c
-        ORDER BY name, updated DESC) c1 ON c1.id = b.currency_id AND c1.updated > b.updated
-    GROUP BY 1, 2, 3, 4
-    ORDER BY 1 DESC, 2, 3) t1)
-ORDER BY 1 DESC, 2, 3
+INSERT INTO currency VALUES (100, 'EUR', 0.85, '2022-01-01 13:29');
+INSERT INTO currency VALUES (100, 'EUR', 0.79, '2022-01-08 13:29');
 
-SELECT * FROM "user";
-SELECT * FROM balance;
-SELECT * FROM currency;
+WITH t3 AS (SELECT balance.user_id, currency.id, currency.name AS currency_name, balance.money AS balance_money,
+-- ближайшее значение валюты в прошлом t1
+	(SELECT currency.rate_to_usd
+	FROM currency
+	WHERE currency.id = balance.currency_id
+	AND currency.updated < balance.updated
+	ORDER BY currency.updated DESC
+	LIMIT 1) AS t1,
+-- ближайшее значение валюты в будущем t2
+	(SELECT currency.rate_to_usd
+	FROM currency
+	WHERE currency.id = balance.currency_id
+	AND currency.updated > balance.updated
+	ORDER BY currency.updated
+	LIMIT 1) AS t2
+FROM currency INNER JOIN balance ON currency.id = balance.currency_id
+GROUP BY balance.money, currency.name, currency.id, balance.updated,
+		balance.currency_id,balance.user_id
+ORDER BY t1 DESC, t2)
 
-
-SELECT t1.name, t1.lastname, t1.currency_name, t1.money FROM (
-    SELECT COALESCE(u.name, '') name, COALESCE(u.lastname, '') lastname, COALESCE(c1.name, '') currency_name,
-           b.money
-           FROM "user" u
-    FULL JOIN balance b ON b.user_id = u.id
-    INNER JOIN (
-        SELECT * FROM currency c
-        ORDER BY name, updated DESC) c1 ON c1.id = b.currency_id AND c1.updated < b.updated
-    GROUP BY 1, 2, 3, 4
-    ORDER BY 1 DESC, 2, 3) t1
-
-
--- 	insert into currency values (100, 'EUR', 0.85, '2022-01-01 13:29');
--- insert into currency values (100, 'EUR', 0.79, '2022-01-08 13:29');
-
--- WITH full_balance_new AS(
--- WITH balance_new AS
---  (SELECT user_id,
---       coalesce("user".name, '') AS name,
---          coalesce("user".lastname, '') AS lastname,
---          type,
---          bal1.sum AS volume,
---          bal1.currency_id,
---          bal1.updated
---  FROM
---   (SELECT user_id,
---    sum(money) AS sum,
---    type,
---    currency_id,
---    updated
---   FROM balance
---   GROUP BY  user_id, type, currency_id, updated
---   ORDER BY  1) AS bal1 FULL
---   JOIN "user"
---    ON id = bal1.user_id), t1 AS
---    (SELECT balance_new.user_id,
---    balance_new.name AS user_name,
---    balance_new.lastname,
---    type,
---    volume,
---    currency_id,
---    balance_new.updated AS balance_updated,
---    currency.name AS currency_name,
---    rate_to_usd,
---    currency.updated AS currency_updated,
-
---     CASE
---     WHEN balance_new.updated <= currency.updated THEN
---     (currency.updated - balance_new.updated)
---     ELSE (balance_new.updated - currency.updated)
---     END AS date_diff
---    FROM balance_new FULL
---    JOIN currency
---     ON currency_id = currency.id
---    ORDER BY  1, 5)
---    SELECT t1.user_id,
---    t1.user_name,
---    t1.lastname,
---    t1.type,
---    t1.volume,
---    t1.currency_id,
---    t1.balance_updated,
---    t1.currency_updated,
---    MIN(date_diff)
---     OVER (PARTITION BY t1.user_id, t1.type, t1.balance_updated) AS min
---    FROM t1), dist_balance_new AS
---    (SELECT user_id,
---    user_name,
---    lastname,
---    type,
---    volume,
---    currency_id,
---    balance_updated,
---    min
---    FROM full_balance_new
---    GROUP BY  user_id,user_name, lastname, type, volume, currency_id, balance_updated, min)
-
--- SELECT   user_name AS name,
---    lastname,
---    name AS currency_name,
---    volume * currency.rate_to_usd AS currency_in_usd
---  FROM dist_balance_new
--- INNER JOIN currency
---  ON dist_balance_new.currency_id = currency.id
---   AND (dist_balance_new.balance_updated+min) = currency.updated
---   OR (dist_balance_new.balance_updated-min) = currency.updated
--- ORDER BY  1 DESC, 2, 3 ASC;
+SELECT coalesce("user".name, 'not defined') AS name, coalesce("user".lastname, 'not defined') AS lastname,
+		t3.currency_name, (t3.balance_money * coalesce(t3.t1, t3.t2)) AS currency_in_usd
+FROM t3
+LEFT JOIN "user" ON "user".id = t3.user_id
+ORDER BY 1 DESC, 2, 3;
